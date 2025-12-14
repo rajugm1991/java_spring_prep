@@ -20,7 +20,7 @@ This comprehensive guide covers everything you need to master High-Level Design 
 
 ### Architectural Patterns
 7. ✅ [Monolithic vs Microservices](./07_MONOLITHIC_VS_MICROSERVICES.md) - When to use what, trade-offs, migration strategies
-8. 📖 [Event-Driven Architecture](./08_EVENT_DRIVEN_ARCHITECTURE.md) - Pub-Sub, Event Sourcing, CQRS *(See [Event-Driven Guide](../imp/EVENT_DRIVEN_ARCHITECTURE_GUIDE.md))*
+8. ✅ [Event-Driven Architecture](./08_EVENT_DRIVEN_ARCHITECTURE.md) - Pub-Sub, Event Sourcing, CQRS
 9. ✅ [API Design Patterns](./09_API_DESIGN_PATTERNS.md) - REST, GraphQL, gRPC, API Gateway
 
 ### Data Management
@@ -35,8 +35,8 @@ This comprehensive guide covers everything you need to master High-Level Design 
 16. ✅ [Designing a Video Streaming Service](./16_DESIGNING_VIDEO_STREAMING.md) - Netflix-like architecture
 17. ✅ [Designing a Search Engine](./17_DESIGNING_SEARCH_ENGINE.md) - Google-like search system
 18. ✅ [Designing a Payment System](./18_DESIGNING_PAYMENT_SYSTEM.md) - Financial transaction system
-19. 📖 [Designing a Rate Limiter](./19_DESIGNING_RATE_LIMITER.md) - Distributed rate limiting *(See [Rate Limiting Guide](../imp/RATE_LIMITING_COMPLETE_GUIDE.md))*
-20. 📖 [Designing a Distributed Cache](./20_DESIGNING_DISTRIBUTED_CACHE.md) - Redis-like caching system *(See [Redis Guide](../imp/REDIS_CACHING_GUIDE.md))*
+19. ✅ [Designing a Rate Limiter](./19_DESIGNING_RATE_LIMITER.md) - Distributed rate limiting
+20. ✅ [Designing a Distributed Cache](./20_DESIGNING_DISTRIBUTED_CACHE.md) - Redis-like caching system
 
 ### Advanced Topics
 21. ✅ [Distributed Systems](./21_DISTRIBUTED_SYSTEMS.md) - Consensus Algorithms, Distributed Locks, Leader Election
@@ -53,8 +53,7 @@ This comprehensive guide covers everything you need to master High-Level Design 
 
 ## 📊 Completion Status
 
-- ✅ **Complete** (25 files): All chapters with full content, real-world examples, and diagrams
-- 📖 **Referenced** (2 files): Event-Driven Architecture, Rate Limiter, Distributed Cache (covered in other guides)
+- ✅ **Complete** (27 files): All chapters with full content, real-world examples, and diagrams
 
 **All 27 chapters are now complete with comprehensive content!**
 
@@ -197,6 +196,7 @@ This comprehensive guide covers everything you need to master High-Level Design 
 ## 📚 Additional Resources
 
 - [LLD Guide](../lld/README.md) - Low-Level Design guide
+- [AWS Cloud Guide](../cloud/README.md) - AWS cloud + staff engineer interview guide
 - [System Design Document](../SYSTEM_DESIGN.md) - E-commerce platform design
 - [Event-Driven Architecture](../imp/EVENT_DRIVEN_ARCHITECTURE_GUIDE.md) - Event-driven patterns
 - [Microservices Guide](../ADVANCED_MICROSERVICES_GUIDE.md) - Microservices patterns
