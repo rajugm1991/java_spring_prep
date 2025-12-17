@@ -492,3 +492,162 @@ If you want, I can:
 	•	Map OOPS → System Design → LLD
 
 Just tell me 👍
+Great question 👍
+This is exactly the kind of thing interviewers expect from someone with 10+ years experience — not pattern definitions, but decision thinking.
+
+Below is a simple, reusable template + mental model you can apply in real projects and interviews.
+
+⸻
+
+✅ How to Decide Which Design Pattern to Use
+
+(Practical Decision Template)
+
+⸻
+
+🔹 STEP 1: Identify the Problem Type (Most Important)
+
+Ask yourself what is changing / causing pain?
+
+Question to Ask	If YES → Pattern Direction
+Object creation logic is complex or scattered?	Creational
+Behavior varies at runtime?	Behavioral
+Structure is rigid or tightly coupled?	Structural
+
+👉 80% of wrong pattern usage happens here
+
+⸻
+
+🔹 STEP 2: Use the 4-Question Filter (Core Template)
+
+Before choosing any pattern, answer these:
+
+1️⃣ What varies?
+	•	Algorithm?
+	•	Object type?
+	•	State?
+	•	Communication?
+
+2️⃣ What must remain stable?
+	•	API?
+	•	Client code?
+	•	Contracts?
+
+3️⃣ Do I want compile-time or runtime flexibility?
+	•	Compile-time → Inheritance
+	•	Runtime → Composition / Delegation
+
+4️⃣ Who owns the decision?
+	•	Caller?
+	•	Framework?
+	•	Configuration?
+
+⸻
+
+🔹 STEP 3: Map Problem → Pattern (Cheat Sheet)
+
+🏗️ Creational Patterns
+
+Use when object creation is the problem
+
+Problem	Pattern
+Multiple constructors → confusion	Builder
+Need one instance	Singleton
+Object type decided at runtime	Factory
+Families of related objects	Abstract Factory
+Clone complex objects	Prototype
+
+📌 Rule: If new is everywhere → think Factory/Builder
+
+⸻
+
+🧱 Structural Patterns
+
+Use when structure or coupling is the problem
+
+Problem	Pattern
+Need to wrap legacy code	Adapter
+Add behavior without modifying class	Decorator
+Simplify complex subsystem	Facade
+Large object hierarchy	Composite
+Control access / lazy loading	Proxy
+
+📌 Rule: If change causes ripple effect → think Structural
+
+⸻
+
+🔄 Behavioral Patterns
+
+Use when interaction or behavior is the problem
+
+Problem	Pattern
+Many if-else conditions	Strategy
+State-based behavior	State
+Event notifications	Observer
+Request pipeline	Chain of Responsibility
+Undo / command history	Command
+Algorithm skeleton fixed	Template Method
+
+📌 Rule: If behavior changes often → think Behavioral
+
+⸻
+
+🔹 STEP 4: Interview-Ready Decision Template (IMPORTANT)
+
+Use this exact structure while answering:
+
+“I first identify what is changing in the system.
+If object creation varies, I choose a creational pattern.
+If behavior changes at runtime, I prefer behavioral patterns using composition.
+If coupling or structure is the issue, I apply structural patterns.
+I always validate whether the pattern reduces complexity and improves extensibility.”
+
+⸻
+
+🔹 STEP 5: Real-World Example (Strategy Pattern)
+
+❌ Problem
+
+if(type.equals("CARD")) { ... }
+else if(type.equals("UPI")) { ... }
+else if(type.equals("NETBANKING")) { ... }
+
+✅ Thinking
+	•	What varies? → Payment algorithm
+	•	Runtime selection? → Yes
+	•	Avoid if-else? → Yes
+
+👉 Choose Strategy Pattern
+
+⸻
+
+🔹 STEP 6: Anti-Pattern Warning (Senior-Level Insight)
+
+❌ Don’t do this:
+	•	Using patterns just because you know them
+	•	Over-engineering small problems
+	•	Forcing inheritance when composition fits
+
+✅ Do this:
+	•	Start simple
+	•	Introduce pattern when change pressure appears
+
+“Patterns solve recurring problems, not future imaginary ones.”
+
+⸻
+
+🧠 One-Line Golden Rule (Memorize This)
+
+“Choose a pattern based on what changes, not on what exists.”
+
+⸻
+
+🎯 Want Next?
+
+I can:
+	•	Map Spring Boot internals → design patterns
+	•	Give system-design → pattern mapping
+	•	Provide LLD interview answer templates
+	•	Show anti-patterns in microservices
+
+Just tell me 👌
