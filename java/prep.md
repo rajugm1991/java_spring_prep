@@ -651,3 +651,89 @@ I can:
 	•	Show anti-patterns in microservices
 
 Just tell me 👌
+Perfect 👍
+Let’s make this VERY SIMPLE, no code, no bits first — just one bucket, one rule.
+
+⸻
+
+Imagine this box setup 📦
+
+Before resize
+	•	HashMap has 16 boxes (0–15)
+	•	One box (box 5) has 3 keys
+
+Box 5 → [A, B, C]
+
+
+⸻
+
+Now HashMap grows 🔁
+	•	Boxes double: 16 → 32
+	•	New boxes: 0–31
+
+👉 HashMap must redistribute keys.
+
+⸻
+
+The ONE simple rule 🧠
+
+For each key in box 5, HashMap asks:
+
+Does this key stay in box 5 OR move to box 21?
+(because 21 = 5 + 16)
+
+That’s it. Only two choices.
+
+⸻
+
+Let’s decide for each key
+
+Key	Decision
+A	Move
+B	Stay
+C	Move
+
+(HashMap decides this internally using hash bits — you don’t need that yet.)
+
+⸻
+
+After redistribution ✨
+
+Box 5  → [B]
+Box 21 → [A, C]
+
+🎯 Box 5 split into two boxes
+	•	Old box stays
+	•	New box = old index + old size
+
+⸻
+
+That’s redistribution ✅
+
+❌ No new hash calculation
+❌ No searching other boxes
+✅ Just split one box into two
+
+⸻
+
+If you remember only ONE line
+
+When HashMap grows, each old bucket splits into two:
+keys either stay in the same index or move to (old index + old capacity).
+
+⸻
+
+Tiny memory trick 🧩
+
+Before: 5
+After:  5  and  5+16 = 21
+
+
+⸻
+
+If you want, next I can:
+	•	Explain WHY a key stays or moves (still simple)
+	•	Show same example with just ONE bit
+	•	Explain using real Java object analogy
+
+Just say 👍
