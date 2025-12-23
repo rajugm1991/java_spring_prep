@@ -442,4 +442,490 @@ Staff interview guidance for 23/24:
 1. How do you roll a Java upgrade across many services safely?
 2. What’s your approach to preview/incubator features in production?
 
+Version	Core Feature
+Java 9	Module System, Jshell, Stream API enhancements, String memory improvements
+Java 10	var, G1 GC, Application class- data sharing (APPcds) improves JVM starup
+Java 11	HTTP Client, String APIs
+Java 12	Switch Expressions (preview)
+Java 13	Text Blocks
+Java 14	Records (preview), NPE Improvements
+Java 15	Sealed Classes (preview)
+Java 16	Pattern Matching
+Java 17	LTS – Sealed Classes, ZGC
+Java 18	Simple Web Server
+Java 19	Virtual Threads (preview)
+Java 20	Structured Concurrency
+Java 21	LTS – Virtual Threads (final), Pattern Matching, Sequenced Collections
+
+
+
+
+✅ Java 9 (Sep 2017)
+
+1. Project Jigsaw (Module System)
+
+This module system addresses problems related to the scaling of software systems, encapsulation, dependency management, and application packaging.
+
+Key Goals of Project Jigsaw
+	1. Make the JDK more modular – Break the JDK into smaller, interoperable modules.
+	2. Improve encapsulation – Internal APIs (like sun.*) can be properly hidden.
+	3. Support reliable configuration – Detect missing dependencies and conflicts at compile time or startup.
+	4. Enable scalable applications – Developers can create applications composed of smaller, well-defined modules.
+	5. Enable smaller runtime images – Applications can include only the modules they need, using tools like jlink.
+
+📦 Basic Concepts
+	• Module: A self-describing collection of code and data. Each module has:
+		○ A module-info.java file declaring the module’s name, dependencies, and exported packages.
+	• Exports: Only explicitly exported packages are accessible to other modules.
+	• Requires: Used to declare module dependencies.
+	• Transitive dependencies: Using requires transitive lets dependent modules inherit dependencies.
+
+module com.example.myapp {
+    requires java.sql;
+    requires com.example.utils;
+
+    exports com.example.myapp.api;
+}
+
+📊 JDK Modularization Example
+Before Jigsaw, the entire JDK was a monolith. Now it's broken into modules like:
+	• java.base: Core Java APIs (always required, implicitly).
+	• java.sql: JDBC and database access.
+	• java.xml: XML processing.
+Run this to list JDK modules:
+
+java --list-modules
+
+🛠️ Tools Introduced or Enhanced
+	• jlink: Create custom runtime images with only the necessary modules.
+	• jdeps: Analyze dependencies between classes and modules.
+	• jshell: REPL that also understands modules.
+
+📉 Benefits of Using Modules
+	• Better encapsulation and security.
+	• Reduced startup time and footprint with custom runtimes.
+	• Clear dependency management.
+	• Prevention of "classpath hell".
+
+
+
+	• Breaks JDK into modules: better encapsulation.
+	• module-info.java to declare dependencies.
+	• ⛔ Common Pitfall: Classpath conflicts in large apps.
+	• 🔥 Used in large microservices or platforms with plugin architecture.
+
+
+2. JShell (REPL)
+	• Interactive shell for quick testing.
+	• Useful for quick prototyping or DSA practice.
+
+  To start JShell, open a terminal and type:
+
+📘 Basic Usage Examples
+
+jshell> int x = 10;
+x ==> 10
+
+jshell> x + 5
+$2 ==> 15
+
+jshell> String message = "Hello, JShell!";
+message ==> "Hello, JShell!"
+
+jshell> System.out.println(message);
+Hello, JShell!
+
+
+✅ Java 10 (Mar 2018)
+1. var Keyword (Local Variable Type Inference)
+	• Cleaner syntax, improves readability.
+
+var list = new ArrayList<String>();
+
+When to Use
+Use var when the type is obvious from the right-hand side, or when the type is long/complex and clutters the code.
+
+🚫 Limitations
+	• Cannot be used for method parameters or return types.
+	• Cannot be used for class fields (instance or static variables).
+	• Overuse can reduce code readability, especially with complex types.
+
+
+2. G1 GC Improvements
+The G1 (Garbage First) Garbage Collector in Java has seen significant improvements in recent Java versions (especially Java 11 through Java 17 and beyond). These enhancements aim to improve performance, predictability, and memory efficiency. Below are some key G1 GC improvements:
+
+🆕 Key G1 GC Improvements
+
+1. Improved Pause-Time Control
+	• Goal: Better adhere to user-specified pause time goals (-XX:MaxGCPauseMillis).
+	• How: More accurate prediction and selection of regions to collect, allowing more consistent pause durations.
+	• Benefit: More predictable GC behavior for latency-sensitive applications.
+
+2. Garbage-First Heap Region Allocation Enhancements
+	• G1's region allocation strategy is smarter now:
+		○ Reduces fragmentation.
+		○ More efficient young generation sizing.
+		○ Better balancing between young and old generation collections.
+3. Concurrent Refinement Enhancements
+	• Parallel and concurrent refinement threads have been tuned to:
+		○ Reduce contention and overhead.
+		○ Improve scalability with modern CPUs.
+	• Leads to more efficient remembered set (RSet) processing.
+4. String Deduplication Improvements
+	• G1 GC supports string deduplication (-XX:+UseStringDeduplication) to reduce memory usage.
+	• Improved in newer versions:
+		○ Smarter heuristics.
+		○ Reduced CPU overhead during deduplication.
+5. Heap Memory Efficiency
+	• G1 now better reclaims Humongous Objects (objects > 50% of a region size).
+	• Introduced early reclamation and reduced memory waste from large object allocation.
+
+6. Improved Mixed GC Phases
+	• Mixed GCs (young + old collection) are now more efficient:
+		○ Old regions are collected in a more adaptive way.
+		○ Avoids unnecessary collection work if goals are already met.
+7. Better Adaptive Policies
+	• Heuristics have been refined to:
+		○ Predict pause times more accurately.
+		○ Automatically tune parameters for optimal behaviour.
+
+✅ Java 11 (Sep 2018) – LTS
+
+1. HTTP Client API (Standardized)
+
+HttpClient client = HttpClient.newHttpClient();
+
+Replaces HttpURLConnection, supports async, HTTP/2.
+ Key Features:
+	• Standard API in java.net.http package
+	• Supports HTTP/1.1 and HTTP/2
+	• Asynchronous (non-blocking) and synchronous calls
+	• Uses CompletableFuture and WebSocket support
+	• Replaces legacy HttpURLConnection
+
+2. String Enhancements
+
+isBlank, lines(), strip()-remove leading/trailing spaces, stripeLeading() or stripeTrailing(), repeat
+
+3. Removed APIs
+
+Java EE modules like JAXB, JAX-WS removed from JDK.
+Soap, xml binding 
+
+✅ Java 12 (Mar 2019)
+
+1. Switch Expression (Preview)
+
+int result = switch (day) {
+    case MONDAY -> 1;
+    default -> 0;
+};
+
+int day = 3;
+
+String result = switch (day) {
+    case 1, 2, 3 -> "Weekday";
+    case 4, 5    -> "Weekend";
+    default      -> "Unknown";
+};
+
+Java 12 = Cleaner switch + better Strings + powerful collectors + JVM tuning
+
+Feature	Description
+Arrow (->) syntax	No need for break; avoids fall-through bugs
+Returns a value	Can assign directly to a variable
+Multiple labels	Group cases using commas
+Exhaustiveness check	Useful in enum and sealed types
+
+2. Shenandoah GC (Experimental)
+
+✅ Java 13 (Sep 2019)
+1. Text Blocks (Preview)
+
+String html = """
+    <html>
+      <body>Hello</body>
+    </html>
+    """;
+Why Use Text Blocks?
+They solve problems with traditional string syntax like:
+	• Escaping newlines (\n) and quotes (\")
+	• Poor readability of multi-line strings (e.g., JSON, SQL, HTML)
+
+Makes multi-line strings readable.
+
+✅ Java 14 – Modern Syntax (Mar 2020)
+Records (Preview)
+Java 14 introduced records as a preview feature, providing a compact syntax for declaring classes that are transparent holders for shallowly immutable data.
+
+🔍 What Are Records?
+A record is a special kind of class in Java that is:
+	• Final (cannot be extended)
+	• Automatically provides:
+		○ equals()
+		○ hashCode()
+		○ toString()
+		○ Getters for each field
+		○ Canonical constructor
+
+✅ Syntax
+record Person(String name, int age) {}
+
+This is equivalent to writing:
+
+final class Person {
+    private final String name;
+    private final int age;
+
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String name() { return name; }
+    public int age() { return age; }
+
+    @Override
+    public boolean equals(Object o) { /* ... */ }
+
+    @Override
+    public int hashCode() { /* ... */ }
+
+    @Override
+    public String toString() { /* ... */ }
+}
+record Point(int x, int y) {}
+ 
+
+📦 Key Features
+	• Concise syntax for data carriers.
+	• Immutable by default (fields are final).
+	• Built-in implementations for equals, hashCode, and toString.
+	• Can include methods, static fields, and compact constructors.
+
+
+🧠 Use Cases
+DTOs (Data Transfer Objects)
+Value classes
+Configuration models
+Immutable domain models
+
+🔹 Helpful NullPointerExceptions
+
+Java 14 introduced Helpful NullPointerExceptions as an opt-in JVM feature, designed to make debugging easier by showing exactly what was null when a NullPointerException (NPE) occurred.
+
+✅ The Solution in Java 14
+Enable Helpful NullPointerExceptions, and the JVM will tell you exactly what part of the expression was null.
+
+🛠 How to Enable
+You must enable it explicitly with a JVM flag:
+
+java -XX:+ShowCodeDetailsInExceptionMessages MyApp
+
+
+🧱 Java 15 (Released: Sep 2020)
+🔹 Key Features:
+	1. Text Blocks (Standard).
+	2. Sealed Classes (Preview):
+		○ Restrict which classes can extend a class.
+Sealed classes
+
+Java 15 introduced sealed classes as a preview feature, which allows you to control which classes can extend or implement a superclass or interface. This gives you more control over class hierarchies, improves maintainability, and allows the compiler and tools to reason more effectively about the code.
+
+🔒 What are Sealed Classes?
+
+A sealed class or interface restricts which other classes or interfaces may extend or implement it.
+
+public sealed class Shape
+    permits Circle, Rectangle, Square {
+    // class body
+}
+
+public final class Circle extends Shape {
+    // class body
+}
+
+public non-sealed class Rectangle extends Shape {
+    // class body
+}
+
+public sealed class Square extends Shape
+    permits SmallSquare, BigSquare {
+    // class body
+}
+
+final class SmallSquare extends Square { }
+final class BigSquare extends Square { }
+
+| Keyword      | Description                                                              |
+| ------------ | ------------------------------------------------------------------------ |
+| `sealed`     | Declares a class/interface with restricted inheritance.                  |
+| `permits`    | Lists the allowed subclasses (required unless all permitted are nested). |
+| `final`      | Declares that a subclass cannot be further extended.                     |
+| `non-sealed` | Allows a subclass to be extended freely (removes sealing from subclass). |
+
+🧠 Why Use Sealed Classes?
+	• Restrict extensibility – Know all subclasses at compile time.
+	• Improve pattern matching – Switch expressions can become exhaustive.
+	• Enhance security and API design – Prevent unintended subclassing.
+	• Encourage clear architecture – Only explicitly allowed subclasses.
+
+🔧 Requirements
+	• All subclasses must be in the same module (or the same package if modules aren’t used).
+	• All permitted subclasses must directly extend or implement the sealed class or interface.
+
+public sealed interface Shape
+    permits Circle, Rectangle {
+    double area();
+}
+
+public final class Circle implements Shape {
+    double radius;
+    public double area() { return Math.PI * radius * radius; }
+}
+
+public final class Rectangle implements Shape {
+    double width, height;
+    public double area() { return width * height; }
+}
+
+With this structure, the compiler knows Shape can only be a Circle or Rectangle, which enables exhaustive checks in pattern matching (especially useful in Java 17+).
+
+
+🧱 Java 16 (Released: Mar 2021)
+🔹 Key Features:
+	1. Records (Standard).
+	2. Pattern Matching for instanceof (Standard).
+	3. JEP 376 – ZGC on macOS and Windows.
+
+
+
+1. Records (Standardized)
+	Introduced in Java 14 as a preview, finalized in Java 16.
+
+What it is:
+A concise way to create data-carrying classes (POJOs) with automatic constructors, accessors, equals/hashCode, toString, etc.
+📌 Immutable by default, great for DTOs and functional programming.
+
+2. Pattern Matching for instanceof (Preview)
+Makes type checks and casting cleaner.
+
+if (obj instanceof String s) {
+    System.out.println(s.toUpperCase());  // no explicit cast
+}
+
+✅ No need to cast after checking with instanceof.
+
+3. Sealed Classes (Second Preview)
+Improved from Java 15; allows better modeling of restricted class hierarchies.
+
+
+✅ Java 17: Key Features & Enhancements
+
+1. 🧩 Sealed Classes (Standard – JEP 409)
+
+
+Purpose: Control which classes or interfaces can extend or implement a class/interface.
+
+2. 🪓 Pattern Matching for switch (Preview – JEP 406)
+
+Adds more flexibility and safety to switch expressions.
+
+static String formatShape(Shape s) {
+    return switch (s) {
+        case Circle c -> "Circle with radius " + c.radius();
+        case Square sq -> "Square with side " + sq.side();
+    };
+}
+
+
+5. 🔒 Strong Encapsulation of JDK Internals
+Most internal JDK APIs are now strongly encapsulated by default. This breaks access to sun.* classes unless explicitly allowed.
+✔ Improves security
+❗ Might break older code that relied on internal APIs
+
+6. 🧹 Deprecations & Removals
+• Removed: Applets (finally deprecated)
+• Removed: RMI Activation System (JEP 407)
+• Removed: Experimental AOT and JIT compiler (JEP 410)
+• Removed: Security Manager marked for removal (JEP 411)
+
+7. 🚀 Performance & JVM Improvements
+
+• New macOS/AArch64 port (Apple M1 support) — JEP 391
+• Better garbage collection (G1, ZGC optimizations)
+• Updated Flight Recorder and monitoring tools
+
+⚙️ LTS Benefit
+Being an LTS release, Java 17 is the most stable choice for enterprise development until at least Java 21 or 25. It replaces Java 11 as the go-to production version
+
+
+✅ Java 18 Key Features & Details
+1. 🌐 Simple Web Server (JEP 408)
+jwebserver --port 8080 --directory .
+
+• Supports HTTP/1.1
+• Serves static files (HTML, CSS, JS, etc.)
+• No need for external server setup
+
+✅ Java 21 — Key Features & Details
+
+🆕 1. Record Patterns (JEP 440 – Final)
+Allows pattern matching directly on record components:
+
+record Point(int x, int y) {}
+
+static void print(Point p) {
+    if (p instanceof Point(int x, int y)) {
+        System.out.println("x = " + x + ", y = " + y);
+    }
+}
+✔ Combines pattern matching and records
+✔ Simplifies destructuring
+
+🆕 2. Pattern Matching for switch (JEP 441 – Final)
+Enables type-safe, expressive switch with types and guards:
+
+static String handle(Object obj) {
+    return switch (obj) {
+        case String s -> "A string: " + s;
+        case Integer i when i > 0 -> "Positive int: " + i;
+        default -> "Something else";
+    };
+}
+
+✔ Cleaner and safer switch logic
+✔ Great for sealed classes and ADTs
+🧩 3. Sealed Classes (JEP 409 – Standard since Java 17)
+Fully supported in Java 21 — great with pattern matching.
+
+sealed interface Shape permits Circle, Square {}
+final class Circle implements Shape {}
+final class Square implements Shape {}
+
+🌐 4. Virtual Threads (JEP 444 – Final, formerly preview)
+A massive change to Java’s concurrency model!
+
+Runnable task = () -> System.out.println("Running in thread: " + Thread.currentThread());
+Thread.startVirtualThread(task);
+
+✔ Lightweight threads
+✔ Enables millions of concurrent tasks
+✔ Game-changing for server-side apps (replaces complex thread pools)
+
+Feature	Platform Thread (Thread)	Virtual Thread (Thread.ofVirtual())
+Backed by OS thread?	✅ Yes	❌ No (user-mode, managed by JVM)
+Memory cost	🧵 High (1MB+ per thread)	🪶 Low (~few KB)
+Suitable for blocking?	🚫 No	✅ Yes
+Concurrency scale	❌ Limited (10k+)	✅ Huge (1M+)
+
+
+
+
+
+
+
+![Uploading image.png…]()
+
+
 
