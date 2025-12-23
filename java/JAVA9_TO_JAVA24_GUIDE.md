@@ -103,6 +103,11 @@ var map = java.util.Map.of("a", 1, "b", 2);
 
 Pitfall: don’t use `var` when it hides important types at API boundaries.
 
+Java 10 = productivity (var) + JVM optimizations + container support
+
+Java 10 introduced local variable type inference using var, improved JVM performance, and added container awareness.
+It followed a short-term release model, so most enterprises adopted these features later via Java 11 or 17.
+
 ### 3) New HTTP Client (standard since Java 11)
 
 ```java
