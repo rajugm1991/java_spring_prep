@@ -61,6 +61,36 @@ module com.acme.orders {
     // opens com.acme.orders.internal to com.fasterxml.jackson.databind;
 }
 ```
+### Java 9 Module System — Quick Summary
+
+* **Not mandatory** ❌
+  You can run Java 11/17/21 apps **without JPMS** using the classpath.
+
+* **Mandatory only if you opt in**
+  JPMS is enforced **only when you add `module-info.java` and use module-path**.
+
+* **Spring Boot & microservices**
+  ❌ Usually **avoid JPMS** due to heavy reflection (`opens`, `--add-opens` needed).
+
+* **Where JPMS is useful**
+  ✅ Library/framework development
+  ✅ Platform/SDKs
+  ✅ Large systems needing strict encapsulation
+  ✅ Security-sensitive code
+
+* **Industry reality**
+  90%+ real-world projects **don’t use JPMS**.
+
+### Interview One-Liner
+
+> *“Java 9 modules are optional; most applications stay on the classpath. JPMS is mainly valuable for library and platform development.”*
+
+module service.module {
+    requires spring.context;
+    exports com.example.service;
+    opens com.example.service to spring.core, spring.beans;
+}
+
 
 ### 2) Local variable type inference `var` (Java 10)
 
