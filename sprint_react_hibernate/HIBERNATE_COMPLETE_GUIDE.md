@@ -22,187 +22,235 @@
 ---
 
 Hibernate Senior Guide
-Hibernate – Senior Engineer Guide
+# Hibernate – Senior Engineer Guide
 
-This document is a production-oriented Hibernate/JPA guide for senior engineers. It focuses on entity lifecycle, transactions, performance, and common pitfalls.
+This document is a **production-oriented Hibernate/JPA guide** for senior engineers. It focuses on **entity lifecycle, transactions, performance, and common pitfalls**.
 
-1. Hibernate Entity States
+---
+
+## 1. Hibernate Entity States
 
 Hibernate manages entities through well-defined lifecycle states:
 
-1.1 Transient
+### 1.1 Transient
+- Plain Java object
+- Not associated with a session
+- No database row
 
-Plain Java object
-
-Not associated with a session
-
-No database row
-
+```java
 Employee e = new Employee(); // transient
-1.2 Persistent (Managed)
+```
 
-Associated with an active session / EntityManager
+### 1.2 Persistent (Managed)
+- Associated with an active session / EntityManager
+- Changes are tracked automatically (dirty checking)
 
-Changes are tracked automatically (dirty checking)
-
+```java
 Employee e = session.get(Employee.class, 1L);
 e.setSalary(5000); // auto-update on commit
-1.3 Detached
+```
 
-Previously persistent
+### 1.3 Detached
+- Previously persistent
+- Session closed
+- Changes are NOT tracked
 
-Session closed
-
-Changes are NOT tracked
-
+```java
 session.close();
 e.setSalary(6000); // not saved
-1.4 Removed
+```
 
-Marked for deletion
+### 1.4 Removed
+- Marked for deletion
+- Deleted at flush/commit
 
-Deleted at flush/commit
-
+```java
 session.delete(e);
-State Transition Diagram
+```
+
+### State Transition Diagram
+
+```
 Transient → Persistent → Detached → Persistent → Removed
-2. save(), persist(), update(), merge()
-Method	Purpose	Notes
-save	Insert	Hibernate-specific
-persist	Insert	JPA standard
-update	Reattach	Risky for detached entities
-merge	Copy state	Safe, recommended
+```
+
+---
+
+## 2. save(), persist(), update(), merge()
+
+| Method | Purpose | Notes |
+|------|--------|------|
+| save | Insert | Hibernate-specific |
+| persist | Insert | JPA standard |
+| update | Reattach | Risky for detached entities |
+| merge | Copy state | Safe, recommended |
+
+```java
 Employee managed = entityManager.merge(detachedEmployee);
-3. Dirty Checking
+```
+
+---
+
+## 3. Dirty Checking
 
 Hibernate automatically detects changes to managed entities:
 
+```java
 Employee e = em.find(Employee.class, 1L);
 e.setSalary(8000); // no save()
+```
 
-Snapshot taken when entity becomes managed
+- Snapshot taken when entity becomes managed
+- Compared at flush/commit
+- UPDATE generated if changed
 
-Compared at flush/commit
+⚠️ Works **only** for persistent entities inside a transaction.
 
-UPDATE generated if changed
+---
 
-⚠️ Works only for persistent entities inside a transaction.
+## 4. Transactions (Critical)
 
-4. Transactions (Critical)
+Hibernate **must run inside transactions** for correctness.
 
-Hibernate must run inside transactions for correctness.
-
+```java
 @Transactional
 public void updateSalary() {
     Employee e = repo.findById(1L).get();
     e.setSalary(9000);
 }
+```
 
 Without transactions:
+- Lazy loading fails
+- Dirty checking unreliable
+- Flush timing unpredictable
 
-Lazy loading fails
+---
 
-Dirty checking unreliable
+## 5. Lazy Loading
 
-Flush timing unpredictable
-
-5. Lazy Loading
+```java
 @OneToMany(fetch = FetchType.LAZY)
 private List<Order> orders;
-LazyInitializationException
+```
 
+### LazyInitializationException
 Occurs when accessing lazy data outside an active session.
 
+```java
 employee.getOrders().size(); // ❌ outside transaction
-Fixes
+```
 
-Fetch joins
+### Fixes
+- Fetch joins
+- DTO projections
+- Proper transaction boundaries
 
-DTO projections
-
-Proper transaction boundaries
-
+```java
 @Query("select e from Employee e join fetch e.orders where e.id = :id")
 Employee findWithOrders(Long id);
-6. N+1 Query Problem
+```
+
+---
+
+## 6. N+1 Query Problem
+
+```java
 List<Employee> emps = repo.findAll();
 for (Employee e : emps) {
     e.getOrders().size(); // ❌ N+1
 }
-Solutions
+```
 
-Fetch join
+### Solutions
+- Fetch join
+- EntityGraph
+- Batch fetching
 
-EntityGraph
+---
 
-Batch fetching
+## 7. Caching
 
-7. Caching
-First-Level Cache (L1)
+### First-Level Cache (L1)
+- Session scoped
+- Always enabled
+- Guarantees identity
 
-Session scoped
+### Second-Level Cache (L2)
+- Shared across sessions
+- Optional
+- Use for read-heavy reference data
 
-Always enabled
-
-Guarantees identity
-
-Second-Level Cache (L2)
-
-Shared across sessions
-
-Optional
-
-Use for read-heavy reference data
-
+```java
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Entity
 class Product {}
-8. Flush vs Commit
-Flush	Commit
-Sends SQL	Ends transaction
-Not permanent	Permanent
+```
+
+---
+
+## 8. Flush vs Commit
+
+| Flush | Commit |
+|-----|-------|
+| Sends SQL | Ends transaction |
+| Not permanent | Permanent |
+
+```java
 em.flush();
 em.getTransaction().commit();
-9. Locking
-Optimistic Locking (Preferred)
+```
+
+---
+
+## 9. Locking
+
+### Optimistic Locking (Preferred)
+
+```java
 @Version
 private Long version;
-Pessimistic Locking
+```
+
+### Pessimistic Locking
+
+```java
 em.find(Employee.class, id, LockModeType.PESSIMISTIC_WRITE);
-10. Open Session In View (OSIV)
+```
 
-Keeps session open till response
+---
 
-Hides lazy issues
+## 10. Open Session In View (OSIV)
 
-❌ Avoid in microservices
+- Keeps session open till response
+- Hides lazy issues
+- ❌ Avoid in microservices
 
-11. Production Best Practices
+---
 
-Short-lived persistence context
+## 11. Production Best Practices
 
-Always use @Transactional
+- Short-lived persistence context
+- Always use @Transactional
+- Avoid FetchType.EAGER
+- Prefer DTOs for APIs
+- Monitor SQL and query counts
 
-Avoid FetchType.EAGER
+---
 
-Prefer DTOs for APIs
+## 12. Senior Interview One-Liners
 
-Monitor SQL and query counts
+- "Persistent entities are tracked via dirty checking."
+- "Detached entities are common in web apps; merge is safer."
+- "Lazy loading failures indicate transaction issues."
+- "Hibernate improves productivity, not raw performance."
 
-12. Senior Interview One-Liners
+---
 
-"Persistent entities are tracked via dirty checking."
-
-"Detached entities are common in web apps; merge is safer."
-
-"Lazy loading failures indicate transaction issues."
-
-"Hibernate improves productivity, not raw performance."
-
-TL;DR
-
+## TL;DR
 Hibernate is powerful but unforgiving. Correct transaction boundaries, fetch strategies, and lifecycle management matter more than annotations.
+
 
 ## Introduction to Hibernate
 
